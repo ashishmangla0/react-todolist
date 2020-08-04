@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { FormControl, Input, FormHelperText, InputLabel, Button, List } from '@material-ui/core';
 import './App.css';
 import Todo from './components/Todo';
+import db from './firebase';
 const initialTodoList = ['Take dogs for walk', 'asdfsd fsdaf sdaf', 'mama miya']
 function App() {
   const [input, setinput] = useState('');
-  const [todoList, setTodoList] = useState(initialTodoList)
+//const [todoList, setTodoList] = useState(initialTodoList)
+  const [todoList, setTodoList] = useState([])
+
+//when the app loads, we need to listen to the databse and fetch new todos as they get added/removed
+// useEffect(function,dependencies)
+useEffect(()=>{
+  db.collection('todos').onSnapshot(snapshot =>{
+    console.log(snapshot.docs.map(doc=>doc.data().todo));
+     setTodoList(snapshot.docs.map(doc=>doc.data().todo))
+  })
+},[])
+
+
   const handleInputChange = (e) => {
     setinput(e.target.value);
   }
@@ -16,11 +29,10 @@ function App() {
     setTodoList([...todoList, input]);
     setinput('');
   }
-  
-  const handleremove = (todoindex) =>{
-    const newList = todoList.filter((_,index) => index !== todoindex);
-    setTodoList(newList);
-  }
+  // const handleremove = (todoindex) =>{
+  //   const newList = todoList.filter((_,index) => index !== todoindex);
+  //   setTodoList(newList);
+  // }
   return (
     <>
       <div className="App">
@@ -39,8 +51,8 @@ function App() {
         </form>
         <List>
           {todoList.map((item, index) => (
-            <Todo todoText={item} keyprop={index}  parameter={()=>handleremove(index)} />
-
+           
+            <Todo todoText={item} key={index} />
           ))}
         </List>
       </div>
