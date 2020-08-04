@@ -12,7 +12,6 @@ function App() {
   const handleSubmit = (e) => {
     //fires on click button
     e.preventDefault();
-    console.log('teri maa ka saki naka');
     setTodoList([...todoList, input]);
     setinput('');
   }
