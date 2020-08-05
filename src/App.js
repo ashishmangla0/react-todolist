@@ -1,41 +1,42 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormControl, Input, FormHelperText, InputLabel, Button, List } from '@material-ui/core';
 import './App.css';
 import Todo from './components/Todo';
-import db from './firebase';
-const initialTodoList = ['Take dogs for walk', 'asdfsd fsdaf sdaf', 'mama miya']
+import db, { firebaseTimestamp } from './firebase';
+import firebase from 'firebase';
 function App() {
   const [input, setinput] = useState('');
-//const [todoList, setTodoList] = useState(initialTodoList)
-  const [todoList, setTodoList] = useState([])
+  const [todoList, setTodoList] = useState([]);
 
-//when the app loads, we need to listen to the databse and fetch new todos as they get added/removed
-// useEffect(function,dependencies)
-useEffect(()=>{
-  db.collection('todos').onSnapshot(snapshot =>{
-    console.log(snapshot.docs.map(doc=>doc.data().todo));
-     setTodoList(snapshot.docs.map(doc=>doc.data().todo))
-  })
-},[])
+  //when the app loads, we need to listen to the databse and fetch new todos as they get added/removed
+  // useEffect(function,dependencies)
+  useEffect(() => {
+    db.collection('todos').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      // console.log(snapshot.docs.map(doc=>doc.data().todo));
+      setTodoList(snapshot.docs.map(doc => ({ id: doc.id, todo: doc.data().todo })))
+    })
+  }, [])
 
 
   const handleInputChange = (e) => {
     setinput(e.target.value);
   }
   const handleSubmit = (e) => {
-    //fires on click button
     e.preventDefault();
-    console.log('teri maa ka saki naka');
-    setTodoList([...todoList, input]);
+    db.collection('todos').add({
+      todo: input,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
     setinput('');
   }
-  // const handleremove = (todoindex) =>{
-  //   const newList = todoList.filter((_,index) => index !== todoindex);
+  // const handleremove = (todoindex) => {
+  //   const newList = todoList.filter((_, index) => index !== todoindex);
   //   setTodoList(newList);
   // }
   return (
     <>
       <div className="App">
+
         <h1>TODO List</h1>
         <form onSubmit={handleSubmit}>
           <FormControl >
@@ -50,9 +51,9 @@ useEffect(()=>{
 </Button>
         </form>
         <List>
-          {todoList.map((item, index) => (
-           
-            <Todo todoText={item} key={index} />
+          {todoList.map((item, index) => (<>
+            <Todo todoText={item.todo} key={item.id.toString()} id={item.id} />
+          </>
           ))}
         </List>
       </div>
