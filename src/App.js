@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FormControl, Input, FormHelperText, InputLabel, Button, List } from '@material-ui/core';
+import { FormControl, Input, FormHelperText, InputLabel, Button, List, TextField } from '@material-ui/core';
 import './App.css';
 import Todo from './components/Todo';
 import db, { firebaseTimestamp } from './firebase';
 import firebase from 'firebase';
 function App() {
   const [input, setinput] = useState('');
+  const [tagetTime, setTargetTime] = useState('');
   const [todoList, setTodoList] = useState([]);
 
   //when the app loads, we need to listen to the databse and fetch new todos as they get added/removed
@@ -29,10 +30,6 @@ function App() {
     })
     setinput('');
   }
-  // const handleremove = (todoindex) => {
-  //   const newList = todoList.filter((_, index) => index !== todoindex);
-  //   setTodoList(newList);
-  // }
   return (
     <>
       <div className="App">
@@ -43,7 +40,13 @@ function App() {
             <InputLabel >Write a todo</InputLabel>
             <Input value={input} onChange={handleInputChange} />
             <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
-
+          </FormControl>
+          <FormControl>
+            <TextField label="Target Date" type="date" defaultValue="2017-05-24"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
           </FormControl>
 
           <Button variant="contained" color="primary" disabled={!input} type="submit">
