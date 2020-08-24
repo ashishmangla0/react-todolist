@@ -41,21 +41,13 @@ function App() {
             <Input value={input} onChange={handleInputChange} />
             <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
           </FormControl>
-          <FormControl>
-            <TextField label="Target Date" type="date" defaultValue="2017-05-24"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </FormControl>
-
           <Button variant="contained" color="primary" disabled={!input} type="submit">
             Primary
 </Button>
         </form>
         <List>
           {todoList.map((item, index) => (<>
-            <Todo todoText={item.todo} key={item.id.toString()} id={item.id} />
+            <Todo todoText={item.todo} key={index+1} id={item.id} />
           </>
           ))}
         </List>
